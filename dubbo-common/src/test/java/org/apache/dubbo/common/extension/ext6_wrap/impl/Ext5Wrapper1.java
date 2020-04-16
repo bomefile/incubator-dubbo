@@ -21,6 +21,10 @@ import org.apache.dubbo.common.extension.ext6_wrap.WrappedExt;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+
+/**
+ * 装饰者模式
+ */
 public class Ext5Wrapper1 implements WrappedExt {
     public static AtomicInteger echoCount = new AtomicInteger();
     WrappedExt instance;

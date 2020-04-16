@@ -59,7 +59,7 @@ public class ExtensionLoader_Adaptive_Test {
 
             Map<String, String> map = new HashMap<String, String>();
             URL url = new URL("p1", "1.2.3.4", 1010, "path1", map);
-
+            // 使用spi的默认实现
             String echo = ext.echo(url, "haha");
             assertEquals("Ext1Impl1-echo", echo);
         }
@@ -68,6 +68,7 @@ public class ExtensionLoader_Adaptive_Test {
             SimpleExt ext = ExtensionLoader.getExtensionLoader(SimpleExt.class).getAdaptiveExtension();
 
             Map<String, String> map = new HashMap<String, String>();
+            // 因为没有设置key，所有自动生成默认key。类名驼峰加上.,如SimpleExt=simple.ext
             map.put("simple.ext", "impl2");
             URL url = new URL("p1", "1.2.3.4", 1010, "path1", map);
 
@@ -81,12 +82,14 @@ public class ExtensionLoader_Adaptive_Test {
         SimpleExt ext = ExtensionLoader.getExtensionLoader(SimpleExt.class).getAdaptiveExtension();
 
         Map<String, String> map = new HashMap<String, String>();
+        // 根据key2去自动编译实现impl2
         map.put("key2", "impl2");
         URL url = new URL("p1", "1.2.3.4", 1010, "path1", map);
 
         String echo = ext.yell(url, "haha");
         assertEquals("Ext1Impl2-yell", echo);
 
+        // 这个方法实际就是基于上面的map一样实现
         url = url.addParameter("key1", "impl3"); // note: URL is value's type
         echo = ext.yell(url, "haha");
         assertEquals("Ext1Impl3-yell", echo);
@@ -100,6 +103,11 @@ public class ExtensionLoader_Adaptive_Test {
             String echo = ext.echo(URL.valueOf("1.2.3.4:20880"), "s");
             assertEquals("Ext3Impl1-echo", echo); // default value
 
+            /**
+             * 这个key太牛逼了实现了。任意的url入参都可以
+             * 比如根据自定义的key，在url的map中设置key和v
+             * 或使用url的构造函数作为key
+             */
             Map<String, String> map = new HashMap<String, String>();
             URL url = new URL("impl3", "1.2.3.4", 1010, "path1", map);
 
