@@ -23,7 +23,7 @@ import java.util.List;
 
 @SPI("impl1")
 public interface NoUrlParamExt {
-    // method has no URL parameter
+    // method has no URL parameter，必须有url
     @Adaptive
     String bark(String name, List<Object> list);
 }

@@ -32,6 +32,6 @@ public interface SimpleExt {
     @Adaptive({"key1", "key2"})
     String yell(URL url, String s);
 
-    // no @Adaptive
+    // no @Adaptive ，及使用SPI的"impl1"实现类
     String bang(URL url, int i);
 }

@@ -104,7 +104,7 @@ public class ExtensionLoader_Adaptive_Test {
             assertEquals("Ext3Impl1-echo", echo); // default value
 
             /**
-             * 这个key太牛逼了实现了。任意的url入参都可以
+             * 这个key太牛逼了实现了。
              * 比如根据自定义的key，在url的map中设置key和v
              * 或使用url的构造函数作为key
              */
@@ -121,6 +121,7 @@ public class ExtensionLoader_Adaptive_Test {
 
         {
 
+            // protol和key2都没有配置实现类，所以使用default及SPI注解的impl1
             Map<String, String> map = new HashMap<String, String>();
             URL url = new URL(null, "1.2.3.4", 1010, "path1", map);
             String yell = ext.yell(url, "s");
@@ -130,6 +131,7 @@ public class ExtensionLoader_Adaptive_Test {
             yell = ext.yell(url, "s");
             assertEquals("Ext3Impl2-yell", yell);
 
+            // 这里用impl3的key在1st，所以优先。
             url = url.setProtocol("impl3"); // use 1st key, protocol
             yell = ext.yell(url, "d");
             assertEquals("Ext3Impl3-yell", yell);
@@ -139,7 +141,10 @@ public class ExtensionLoader_Adaptive_Test {
     @Test
     public void test_getAdaptiveExtension_UrlNpe() throws Exception {
         SimpleExt ext = ExtensionLoader.getExtensionLoader(SimpleExt.class).getAdaptiveExtension();
-
+        /**
+         * 这个url是什么用的
+         * @see URL
+          */
         try {
             ext.echo(null, "haha");
             fail();
@@ -171,6 +176,8 @@ public class ExtensionLoader_Adaptive_Test {
 
     @Test
     public void test_getAdaptiveExtension_ExceptionWhenNotAdaptiveMethod() throws Exception {
+
+        // 这里是获取adaptive方法的实现，方法上必须要有@Adaptive注解
         SimpleExt ext = ExtensionLoader.getExtensionLoader(SimpleExt.class).getAdaptiveExtension();
 
         Map<String, String> map = new HashMap<String, String>();
@@ -217,6 +224,7 @@ public class ExtensionLoader_Adaptive_Test {
     public void test_urlHolder_getAdaptiveExtension_noExtension() throws Exception {
         Ext2 ext = ExtensionLoader.getExtensionLoader(Ext2.class).getAdaptiveExtension();
 
+        // 因为没有@SPI和@Active都没有默认实现，所以方法异常。
         URL url = new URL("p1", "1.2.3.4", 1010, "path1");
 
         UrlHolder holder = new UrlHolder();
@@ -258,6 +266,10 @@ public class ExtensionLoader_Adaptive_Test {
         }
     }
 
+    /**
+     * bang方法没有配置@Adaptive
+     * @throws Exception
+     */
     @Test
     public void test_urlHolder_getAdaptiveExtension_ExceptionWhenNotAdativeMethod() throws Exception {
         Ext2 ext = ExtensionLoader.getExtensionLoader(Ext2.class).getAdaptiveExtension();
@@ -292,6 +304,7 @@ public class ExtensionLoader_Adaptive_Test {
             assertThat(expected.getMessage(), containsString("Failed to get extension"));
         }
 
+        // 没有key存在
         url = url.addParameter("key1", "impl1");
         holder.setUrl(url);
         try {
