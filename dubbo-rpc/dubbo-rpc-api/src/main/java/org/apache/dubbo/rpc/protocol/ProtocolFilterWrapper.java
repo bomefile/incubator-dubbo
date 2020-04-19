@@ -45,12 +45,16 @@ public class ProtocolFilterWrapper implements Protocol {
     }
 
     private static <T> Invoker<T> buildInvokerChain(final Invoker<T> invoker, String key, String group) {
-        Invoker<T> last = invoker;
+        Invoker<T> last = invoker;// 最后一个Invoker
         List<Filter> filters = ExtensionLoader.getExtensionLoader(Filter.class).getActivateExtension(invoker.getUrl(), key, group);
         if (!filters.isEmpty()) {
             for (int i = filters.size() - 1; i >= 0; i--) {
                 final Filter filter = filters.get(i);
                 final Invoker<T> next = last;
+                /**
+                 *  invoker 接口的匿名实现
+                 *  包装了filter的调用
+                 */
                 last = new Invoker<T>() {
 
                     @Override
@@ -68,8 +72,24 @@ public class ProtocolFilterWrapper implements Protocol {
                         return invoker.isAvailable();
                     }
 
+                    /**
+                     * @param invocation 调用者信息
+                     * @return
+                     * @throws RpcException
+                     */
                     @Override
                     public Result invoke(Invocation invocation) throws RpcException {
+                        /**
+                         *  这里其实是把filter作为一个参数传递进来，来执行其invoke方法。
+                         *  invoke的调用传入直调用下一个Invoker对象,形成一个责任链。
+                         *  调用链如下
+                         *  Invoker.invoke
+                         *      filter.invoke(Invoker2)
+                         *          Invoker2.invoke
+                         *  @see Filter
+                         *  @param invoker 下一个Invoker对象
+                         *  @param invocation 调用者信息
+                          */
                         Result result = filter.invoke(next, invocation);
                         if (result instanceof AsyncRpcResult) {
                             AsyncRpcResult asyncResult = (AsyncRpcResult) result;
