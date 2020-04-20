@@ -324,6 +324,9 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
         checkMock(interfaceClass);
     }
 
+    /**
+     * dubbo服务暴露入口
+     */
     public synchronized void export() {
         checkAndUpdateSubConfigs();
 
@@ -409,11 +412,13 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     private void doExportUrls() {
+        // 获取当前服务对应的注册中心实例
         List<URL> registryURLs = loadRegistries(true);
         for (ProtocolConfig protocolConfig : protocols) {
             String pathKey = URL.buildKey(getContextPath(protocolConfig).map(p -> p + "/" + path).orElse(path), group, version);
             ProviderModel providerModel = new ProviderModel(pathKey, ref, interfaceClass);
             ApplicationModel.initProviderModel(pathKey, providerModel);
+            // 如果服务指定暴露多个协议，则依次暴露服务
             doExportUrlsFor1Protocol(protocolConfig, registryURLs);
         }
     }
@@ -541,6 +546,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                         url = url.addParameterIfAbsent(Constants.DYNAMIC_KEY, registryURL.getParameter(Constants.DYNAMIC_KEY));
                         URL monitorUrl = loadMonitor(registryURL);
                         if (monitorUrl != null) {
+                            // 上报服务信息给监控地址
                             url = url.addParameterAndEncoded(Constants.MONITOR_KEY, monitorUrl.toFullString());
                         }
                         if (logger.isInfoEnabled()) {

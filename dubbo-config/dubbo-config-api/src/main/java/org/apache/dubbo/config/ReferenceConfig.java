@@ -330,6 +330,7 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
                 logger.info("Using injvm service " + interfaceClass.getName());
             }
         } else {
+            // 指定url
             if (url != null && url.length() > 0) { // user specified URL, could be peer-to-peer address, or register center's address.
                 String[] us = Constants.SEMICOLON_SPLIT_PATTERN.split(url);
                 if (us != null && us.length > 0) {
@@ -346,6 +347,7 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
                     }
                 }
             } else { // assemble URL from register center's configuration
+                // 从注册中心那配置
                 checkRegistry();
                 List<URL> us = loadRegistries(false);
                 if (CollectionUtils.isNotEmpty(us)) {
@@ -363,8 +365,10 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
             }
 
             if (urls.size() == 1) {
+                // 单注册中心，直接通过注册中心消费
                 invoker = refprotocol.refer(interfaceClass, urls.get(0));
             } else {
+                // 多注册中心，把invoker列表合并为一个
                 List<Invoker<?>> invokers = new ArrayList<Invoker<?>>();
                 URL registryURL = null;
                 for (URL url : urls) {
