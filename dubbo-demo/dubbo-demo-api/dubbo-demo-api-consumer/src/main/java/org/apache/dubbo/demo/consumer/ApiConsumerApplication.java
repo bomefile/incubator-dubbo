@@ -25,7 +25,7 @@ import org.apache.dubbo.demo.DemoService;
 
 import java.io.IOException;
 
-public class Application {
+public class ApiConsumerApplication {
     /**
      * In order to make sure multicast registry works, need to specify '-Djava.net.preferIPv4Stack=true' before
      * launch the application
