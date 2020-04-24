@@ -31,7 +31,8 @@ public class ApiProviderApplication {
     public static void main(String[] args) throws Exception {
         ServiceConfig<DemoServiceImpl> service = new ServiceConfig<>();
         service.setApplication(new ApplicationConfig("dubbo-demo-api-provider"));
-        service.setRegistry(new RegistryConfig("zookeeper://127.0.0.1:2181"));
+//        service.setRegistry(new RegistryConfig("zookeeper://127.0.0.1:2181"));
+        service.setRegistry(new RegistryConfig("multicast://224.5.6.7:1234"));
         service.setInterface(DemoService.class);// 暴露指定服务
         service.setRef(new DemoServiceImpl());// 指向真实的服务
         service.export();// 对外暴露服务
