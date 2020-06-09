@@ -97,6 +97,7 @@ public class ExtensionLoader<T> {
 
     private Map<String, IllegalStateException> exceptions = new ConcurrentHashMap<>();
 
+    // ExtensionLoader 是由ExtensionFactory todo mark
     private ExtensionLoader(Class<?> type) {
         this.type = type;
         objectFactory = (type == ExtensionFactory.class ? null : ExtensionLoader.getExtensionLoader(ExtensionFactory.class).getAdaptiveExtension());
@@ -329,6 +330,7 @@ public class ExtensionLoader<T> {
     /**
      * Find the extension with the given name. If the specified name is not found, then {@link IllegalStateException}
      * will be thrown.
+     * todo mark 入口
      */
     @SuppressWarnings("unchecked")
     public T getExtension(String name) {
@@ -347,7 +349,7 @@ public class ExtensionLoader<T> {
             synchronized (holder) {
                 instance = holder.get();
                 if (instance == null) {
-                    // 创建拓展实例
+                    // 创建拓展实例 todo mark
                     instance = createExtension(name);
                     // 设置实例到 holder 中
                     holder.set(instance);
@@ -541,9 +543,11 @@ public class ExtensionLoader<T> {
             if (CollectionUtils.isNotEmpty(wrapperClasses)) {
                 // 循环创建 Wrapper 实例
                 for (Class<?> wrapperClass : wrapperClasses) {
-                    // 将当前 instance 作为参数传给 Wrapper 的构造方法，并通过反射创建 Wrapper 实例。
-                    // 然后向 Wrapper 实例中注入依赖，最后将 Wrapper 实例再次赋值给 instance 变量
-                    instance = injectExtension((T) wrapperClass.getConstructor(type).newInstance(instance));
+                    /**
+                     * 将当前 instance 作为参数传给 Wrapper 的构造方法，并通过反射创建 Wrapper 实例。
+                    * 然后向 Wrapper 实例中注入依赖，最后将 Wrapper 实例再次赋值给 instance 变量
+                    */
+                     instance = injectExtension((T) wrapperClass.getConstructor(type).newInstance(instance));
                 }
             }
             return instance;
@@ -727,7 +731,12 @@ public class ExtensionLoader<T> {
                                 line = line.substring(i + 1).trim();
                             }
                             if (line.length() > 0) {
-                                // 加载类，并通过 loadClass 方法对类进行缓存 todo mark
+                                /**
+                                 * 加载类，并通过 loadClass 方法对类进行缓存 todo mark
+                                 * 知识点扩展：Class.forName 与 类加载器loadClass区别
+                                 * tips：java的类加载机制
+                                  */
+
                                 loadClass(extensionClasses, resourceURL, Class.forName(line, true, classLoader), name);
                             }
                         } catch (Throwable t) {

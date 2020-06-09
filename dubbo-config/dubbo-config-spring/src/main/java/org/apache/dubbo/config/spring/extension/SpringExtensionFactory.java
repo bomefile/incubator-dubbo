@@ -43,10 +43,17 @@ public class SpringExtensionFactory implements ExtensionFactory {
     private static final Set<ApplicationContext> contexts = new ConcurrentHashSet<ApplicationContext>();
     private static final ApplicationListener shutdownHookListener = new ShutdownHookListener();
 
+    /**
+     * 注入spring应用上下文
+     * 那么spring上下文是什么时候被保存的呢？
+     * 搜索代码可知在ReferenceBean和ServiceBean中调用
+     * @param context
+     */
     public static void addApplicationContext(ApplicationContext context) {
         contexts.add(context);
         if (context instanceof ConfigurableApplicationContext) {
             ((ConfigurableApplicationContext) context).registerShutdownHook();
+            // 注册一个dubbo钩子
             DubboShutdownHook.getDubboShutdownHook().unregister();
         }
         BeanFactoryUtils.addApplicationListener(context, shutdownHookListener);

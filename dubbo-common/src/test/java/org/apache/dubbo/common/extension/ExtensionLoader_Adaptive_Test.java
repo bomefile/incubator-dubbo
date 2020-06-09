@@ -58,6 +58,7 @@ public class ExtensionLoader_Adaptive_Test {
             SimpleExt ext = ExtensionLoader.getExtensionLoader(SimpleExt.class).getAdaptiveExtension();
 
             Map<String, String> map = new HashMap<String, String>();
+            // 这个URL很重要，自动适配那个类全靠这个参数
             URL url = new URL("p1", "1.2.3.4", 1010, "path1", map);
             // 使用spi的默认实现
             String echo = ext.echo(url, "haha");
@@ -181,6 +182,7 @@ public class ExtensionLoader_Adaptive_Test {
         SimpleExt ext = ExtensionLoader.getExtensionLoader(SimpleExt.class).getAdaptiveExtension();
 
         Map<String, String> map = new HashMap<String, String>();
+        //
         URL url = new URL("p1", "1.2.3.4", 1010, "path1", map);
 
         try {

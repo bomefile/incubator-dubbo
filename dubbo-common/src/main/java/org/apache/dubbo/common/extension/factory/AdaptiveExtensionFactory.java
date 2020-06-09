@@ -27,7 +27,7 @@ import java.util.List;
 /**
  * AdaptiveExtensionFactory
  * 注意这里是加到了类上，代表该类是默认实现，
- * 为啥不在接口的@SPI配置呢
+ *
  */
 @Adaptive
 public class AdaptiveExtensionFactory implements ExtensionFactory {
