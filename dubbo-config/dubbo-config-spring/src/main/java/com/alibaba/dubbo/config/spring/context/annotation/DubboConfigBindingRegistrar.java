@@ -100,6 +100,7 @@ public class DubboConfigBindingRegistrar implements ImportBeanDefinitionRegistra
         Set<String> beanNames = multiple ? resolveMultipleBeanNames(properties) :
                 Collections.singleton(resolveSingleBeanName(properties, configClass, registry));
 
+        // 注册和配置对象Bean属性绑定处理器
         for (String beanName : beanNames) {
 
             registerDubboConfigBean(beanName, configClass, registry);

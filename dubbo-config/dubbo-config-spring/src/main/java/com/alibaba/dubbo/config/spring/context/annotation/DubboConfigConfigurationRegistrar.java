@@ -29,7 +29,7 @@ import static com.alibaba.dubbo.config.spring.util.AnnotatedBeanDefinitionRegist
 
 /**
  * Dubbo {@link AbstractConfig Config} {@link ImportBeanDefinitionRegistrar register}
- *
+ * 属性的榜单解析配置呢？
  * @see EnableDubboConfig
  * @see DubboConfigConfiguration
  * @see Ordered
