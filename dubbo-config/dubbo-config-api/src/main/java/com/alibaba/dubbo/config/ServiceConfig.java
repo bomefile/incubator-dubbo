@@ -484,10 +484,12 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
         if (!Constants.SCOPE_NONE.toString().equalsIgnoreCase(scope)) {
 
             // export to local if the config is not remote (export to remote only when config is remote)
+            // todo wll 本地服务暴露
             if (!Constants.SCOPE_REMOTE.toString().equalsIgnoreCase(scope)) {
                 exportLocal(url);
             }
             // export to remote if the config is not local (export to local only when config is local)
+            // todo wll 远程服务暴露
             if (!Constants.SCOPE_LOCAL.toString().equalsIgnoreCase(scope)) {
                 if (logger.isInfoEnabled()) {
                     logger.info("Export dubbo service " + interfaceClass.getName() + " to url " + url);
@@ -495,6 +497,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                 if (registryURLs != null && !registryURLs.isEmpty()) {
                     for (URL registryURL : registryURLs) {
                         url = url.addParameterIfAbsent(Constants.DYNAMIC_KEY, registryURL.getParameter(Constants.DYNAMIC_KEY));
+                        // 服务信息上报给监控
                         URL monitorUrl = loadMonitor(registryURL);
                         if (monitorUrl != null) {
                             url = url.addParameterAndEncoded(Constants.MONITOR_KEY, monitorUrl.toFullString());
@@ -508,17 +511,17 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
                         if (StringUtils.isNotEmpty(proxy)) {
                             registryURL = registryURL.addParameter(Constants.PROXY_KEY, proxy);
                         }
-
+                        // 通过动态代理转换成Invoker，RegistryURL存储的是注册中心地址，使用export作为key追加服务元数据信息
                         Invoker<?> invoker = proxyFactory.getInvoker(ref, (Class) interfaceClass, registryURL.addParameterAndEncoded(Constants.EXPORT_KEY, url.toFullString()));
                         DelegateProviderMetaDataInvoker wrapperInvoker = new DelegateProviderMetaDataInvoker(invoker, this);
-
+                        // 服务暴露后向注册中心注册服务信息
                         Exporter<?> exporter = protocol.export(wrapperInvoker);
                         exporters.add(exporter);
                     }
                 } else {
                     Invoker<?> invoker = proxyFactory.getInvoker(ref, (Class) interfaceClass, url);
                     DelegateProviderMetaDataInvoker wrapperInvoker = new DelegateProviderMetaDataInvoker(invoker, this);
-
+                    // 没有注册中心，直接暴露服务
                     Exporter<?> exporter = protocol.export(wrapperInvoker);
                     exporters.add(exporter);
                 }

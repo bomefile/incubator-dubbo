@@ -100,9 +100,10 @@ public class ServiceAnnotationBeanPostProcessor implements BeanDefinitionRegistr
     @Override
     public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
 
+        // ①获取用户注解配置的包扫描
         Set<String> resolvedPackagesToScan = resolvePackagesToScan(packagesToScan);
-
         if (!CollectionUtils.isEmpty(resolvedPackagesToScan)) {
+            // ②触发ServiceBean定义和注入
             registerServiceBeans(resolvedPackagesToScan, registry);
         } else {
             if (logger.isWarnEnabled()) {
@@ -128,20 +129,23 @@ public class ServiceAnnotationBeanPostProcessor implements BeanDefinitionRegistr
 
         scanner.setBeanNameGenerator(beanNameGenerator);
 
+        // ③ 指定扫描dubbo的注解@Service，不会扫描Spring的Service注解
         scanner.addIncludeFilter(new AnnotationTypeFilter(Service.class));
 
         for (String packageToScan : packagesToScan) {
-
+            // ④ 将@Service作为不同的Bean注入容器
             // Registers @Service Bean first
             scanner.scan(packageToScan);
 
             // Finds all BeanDefinitionHolders of @Service whether @ComponentScan scans or not.
+            // ⑤ 对扫描的服务创建BeanDefinitionHolder，用于生产ServiceBean定义
             Set<BeanDefinitionHolder> beanDefinitionHolders =
                     findServiceBeanDefinitionHolders(scanner, packageToScan, registry, beanNameGenerator);
 
             if (!CollectionUtils.isEmpty(beanDefinitionHolders)) {
 
                 for (BeanDefinitionHolder beanDefinitionHolder : beanDefinitionHolders) {
+                    // ⑥ 注册ServiceBean定义并做数据绑定和解析
                     registerServiceBean(beanDefinitionHolder, registry, scanner);
                 }
 
